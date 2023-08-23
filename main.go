@@ -7,7 +7,9 @@ import (
 	"strings"
 )
 
-var mytext = "empty"
+var saveMap = make(map[int64]string)
+
+//в мапе int64 тип ключа, string тип значения, ключом у нас будет уникальный id пользователя
 
 func main() {
 
@@ -27,17 +29,26 @@ func main() {
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		//Text: update.Message.Text,
 	})
 
 	switch {
-	case strings.HasPrefix(update.Message.Text, "save"):
-		mytext = strings.TrimPrefix(update.Message.Text, "save")
-	case strings.HasPrefix(update.Message.Text, "get"):
-		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.Message.Chat.ID,
-			Text:   mytext,
-		})
-	}
+	case strings.HasPrefix(update.Message.Text, "save"): //проверяет начало строки с указанного префикса
+		chatID := update.Message.Chat.ID                               //тут мы присваим значение id пользователя
+		saveMesUser := strings.TrimPrefix(update.Message.Text, "save") //удаляет указанный префикс из переданной строки (если он есть)
+		saveMap[chatID] = saveMesUser                                  // сохраняем текст для текущего пользователя
 
+	case strings.HasPrefix(update.Message.Text, "get"):
+		chatID := update.Message.Chat.ID
+		if saveMesUser, ok := saveMap[chatID]; ok { //проверка на наличие сохраненного текста пользователя
+			b.SendMessage(ctx, &bot.SendMessageParams{
+				ChatID: update.Message.Chat.ID,
+				Text:   saveMesUser,
+			})
+		} else {
+			b.SendMessage(ctx, &bot.SendMessageParams{
+				ChatID: update.Message.Chat.ID,
+				Text:   "No saved words",
+			})
+		}
+	}
 }
