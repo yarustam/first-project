@@ -39,16 +39,15 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	case strings.HasPrefix(update.Message.Text, "get"):
 		chatID := update.Message.Chat.ID
-		if saveMesUser, ok := saveMap[chatID]; ok { //проверка на наличие сохраненного текста пользователя
-			b.SendMessage(ctx, &bot.SendMessageParams{
-				ChatID: update.Message.Chat.ID,
-				Text:   saveMesUser,
-			})
-		} else {
-			b.SendMessage(ctx, &bot.SendMessageParams{
-				ChatID: update.Message.Chat.ID,
-				Text:   "No saved words",
-			})
+		saveMesUser := "No saved words"
+
+		if savedText, ok := saveMap[chatID]; ok { //проверка на наличие сохраненного текста пользователя
+			saveMesUser = savedText
 		}
+
+		b.SendMessage(ctx, &bot.SendMessageParams{ //вывод, если сохраненного текста не было, выведем присвоенное ранее "No saved words"
+			ChatID: update.Message.Chat.ID,
+			Text:   saveMesUser,
+		})
 	}
 }
