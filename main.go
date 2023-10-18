@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-var saveMap = make(map[int64][]string)
-
-//в мапе int64 тип ключа, string тип значения, ключом у нас будет уникальный id пользователя
+var saveMap = make(map[int64][]string) //в мапе int64 тип ключа, string тип значения, ключом у нас будет уникальный id пользователя
 
 func main() {
 
